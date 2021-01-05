@@ -36,41 +36,26 @@ squareSize = 20
 speed = squareSize
 
 class SnakeBody():
-    def __init__(self, row, column, body):
+    def __init__(self, row, column, index):
         self.rect = pygame.Rect(column * squareSize, (row * squareSize) + menuHeight, squareSize, squareSize)
         self.row = row
         self.column = column
-        self.direction = ""
-        self.nextDirections = []
-        self.behind = ""
+        self.direction = "right"
+        self.index = index
+        self.nextDirection = []
 
-    # def changeDirection(self):
-    #     if len(self.nextDirections) == 0:
-    #         return
-        
-    #     if self.nextDirections[0][0] in ["up", "down"]:
-    #         if self.nextDirections[0][1] <= self.column:
-    #             self.direction == self.nextDirections[0][0]
-    #             self.nextDirections.pop(0)
-
-    #     if self.row >= 6:
-    #         self.direction = "up"
-    def changeDirection(self, direction):
-        if direction in ["up", "down"] and self.direction in ["up", "down"]:
+    def changeDirection(self):
+        if len(self.nextDirection) == 0:
             return
-
-        if direction in ["left", "right"] and self.direction in ["left", "right"]:
-            return
-
-        self.direction = direction
         
+        if self.row == self.nextDirection[0][0] and self.column == self.nextDirection[0][1]:
+            self.direction = self.nextDirection[0][2]
+            self.nextDirection.pop(0)
 
 
 class SnakeHead(SnakeBody):
-    def __init__(self, x, y):
-        SnakeBody.__init__(self, x, y)
-        self.nextDirection = ""
-        self.body = [self]
+    def __init__(self, row, column, index):
+        SnakeBody.__init__(self, row, column, index)
 
     def changeDirection(self, direction):
         if direction in ["up", "down"] and self.direction in ["up", "down"]:
@@ -81,19 +66,21 @@ class SnakeHead(SnakeBody):
 
         self.direction = direction
 
-        for square in self.body[1:]:
-            square.nextDirections.append([direction, self.column])
+        pos = [self.row, self.column, direction]
+        for square in snake.body:
+            square.nextDirection.append(pos)
 
 class Snake():
     def __init__(self):
-        self.snake = []
+        self.body = []
 
 # Game Setup
-# snake = SnakeHead(5, 5)
-# snake.body.append(SnakeBody(5, 4))
 snake = Snake()
-snake.snake.append(SnakeBody(5, 5, ""))
-snake.snake.append(SnakeBody(4, 5, snake.snake[-1]))
+snake.body.append(SnakeHead(5, 5, len(snake.body)))
+# snake.body.append(SnakeBody(5, 4, len(snake.body)))
+# snake.body.append(SnakeBody(5, 3, len(snake.body)))
+# snake.body.append(SnakeBody(5, 2, len(snake.body)))
+# snake.body.append(SnakeBody(5, 1, len(snake.body)))
 
 while True:
     # Handling Events
@@ -106,35 +93,24 @@ while True:
         # Movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                snake.changeDirection("up")
+                snake.body[0].changeDirection("up")
                 pass
             if event.key == pygame.K_DOWN:
-                snake.changeDirection("down")
+                snake.body[0].changeDirection("down")
                 pass
             if event.key == pygame.K_LEFT:
-                snake.direction = "left"
+                snake.body[0].changeDirection("left")
                 pass
             if event.key == pygame.K_RIGHT:
-                snake.direction = "right"
+                snake.body[0].changeDirection("right")
                 pass
 
     # Snake movement
-    # body.updateColumn()
-    # body.updateRow()
-    # if body.column <= 3:
-    #     speed = 0
-    # changeDirection(isKeyDown)
-    # if snake.nextDirection:
-    #     snake.changeDirection()
-    for square in snake.body[1:]:
-        square.changeDirection()
-        print(square.column)
-
     movement()
 
-    # if snake.column >= 6:
-    #     for square in snake.body:
-    #         square.direction = "down"
+    for square in snake.body[1:]:
+        square.changeDirection()
+
 
     
     
