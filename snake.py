@@ -5,19 +5,31 @@ from random import randrange
 
 # Functions ------------------------------------
 def movement():
-    for square in snake.body:
-        if square.direction == "up":
+    for i, square in enumerate(game.snake):
+        if len(game.directions) == (square.index):
+            return
+
+        if game.directions[i] == "up":
             square.rect.y -= speed
             square.row -= 1
-        elif square.direction == "down":
+        elif game.directions[i] == "down":
             square.rect.y += speed
             square.row += 1
-        elif square.direction == "left":
+        elif game.directions[i] == "left":
             square.rect.x -= speed
             square.column -= 1
-        elif square.direction == "right":
+        elif game.directions[i] == "right":
             square.rect.x += speed
             square.column += 1
+
+def isValidDirection(direction):
+    if game.directions[0] in ['up', 'down'] and direction in ['up', 'down']:
+        return False
+
+    if game.directions[0] in ['left', 'right'] and direction in ['left', 'right']:
+        return False
+
+    return True
 #-----------------------------------------------
 
 # Pygame Setup
@@ -38,82 +50,156 @@ maxRows = int((size[1] -menuHeight) / squareSize)
 # Snake Setup
 speed = squareSize
 
-class SnakeBody():
-    def __init__(self, row, column, index, direction):
+# class SnakeBody():
+#     def __init__(self, row, column, index, direction):
+#         self.rect = pygame.Rect(column * squareSize, (row * squareSize) + menuHeight, squareSize, squareSize)
+#         self.row = row
+#         self.column = column
+#         self.direction = direction
+#         self.index = index
+#         self.nextDirection = []
+
+#     def changeDirection(self):
+#         if len(self.nextDirection) == 0:
+#             return
+        
+#         if self.row == self.nextDirection[0][0] and self.column == self.nextDirection[0][1]:
+#             self.direction = self.nextDirection[0][2]
+#             self.nextDirection.pop(0)
+
+
+# class SnakeHead(SnakeBody):
+#     def __init__(self, row, column, index):
+#         SnakeBody.__init__(self, row, column, index, "")
+
+#     def changeDirection(self, direction):
+#         if direction in ["up", "down"] and self.direction in ["up", "down"]:
+#             return
+
+#         if direction in ["left", "right"] and self.direction in ["left", "right"]:
+#             return
+
+#         self.direction = direction
+
+#         pos = [self.row, self.column, direction]
+#         for square in snake.body[1:]:
+#             square.nextDirection.append(pos)
+
+# class Berry():
+#     def __init__(self):
+#         self.column = randrange(maxColumns)
+#         self.row = randrange(maxRows)
+#         self.rect = pygame.Rect(self.column * squareSize, (self.row * squareSize) + menuHeight, squareSize, squareSize)
+#         self.createBody = False
+
+#     def checkColision(self):
+#         if self.rect.colliderect(snake.body[0]):
+#             self.move()
+#             self.createBody = True
+    
+#     # Move to a place there isnt a snake
+#     def move(self):
+#         print("Culo")
+#         self.column = randrange(maxColumns)
+#         print(self.column)
+#         self.row = randrange(maxRows)
+#         print(self.row)
+#         self.rect.x = self.column * squareSize
+#         self.rect.y = self.row * squareSize + 100
+#         # self.rect = self.rect.move(self.column * squareSize, (self.row * squareSize) + menuHeight)
+#         snake.nextBody.append([snake.body[-1].row, snake.body[-1].column, snake.body[-1].direction])
+
+# class Snake():
+#     def __init__(self):
+#         self.body = []
+#         self.nextBody = []
+
+#     def addBody(self):
+#         index = len(self.body) - 1
+#         # self.body.append(SnakeBody(self.body[index].row, self.body[index].column, len(self.body), self.body[index].direction))
+#         self.body.append(SnakeBody(self.nextBody[0][0], self.nextBody[0][1], len(self.body), self.nextBody[0][2]))
+#         self.nextBody.pop(0)
+#         berry.createBody = False
+#         pass
+
+class Snake():
+    def __init__(self, row, column, index):
         self.rect = pygame.Rect(column * squareSize, (row * squareSize) + menuHeight, squareSize, squareSize)
         self.row = row
         self.column = column
-        self.direction = direction
+        self.direction = ''
         self.index = index
-        self.nextDirection = []
 
-    def changeDirection(self):
-        if len(self.nextDirection) == 0:
-            return
-        
-        if self.row == self.nextDirection[0][0] and self.column == self.nextDirection[0][1]:
-            self.direction = self.nextDirection[0][2]
-            self.nextDirection.pop(0)
-
-
-class SnakeHead(SnakeBody):
-    def __init__(self, row, column, index):
-        SnakeBody.__init__(self, row, column, index, "")
-
-    def changeDirection(self, direction):
-        if direction in ["up", "down"] and self.direction in ["up", "down"]:
-            return
-
-        if direction in ["left", "right"] and self.direction in ["left", "right"]:
-            return
-
-        self.direction = direction
-
-        pos = [self.row, self.column, direction]
-        for square in snake.body[1:]:
-            square.nextDirection.append(pos)
+    # def changeDirection(self, direction):
+    #     self.direction = direction
+    #     if (self.index + 1) < len(game.snake):
+    #         game.snake[self.index + 1].changeDirection(direction)
+    pass
 
 class Berry():
     def __init__(self):
+        self.column = 0
+        self.row = 0 
+        self.rect = 0
+        self.move()
+
+    def move(self):
         self.column = randrange(maxColumns)
         self.row = randrange(maxRows)
         self.rect = pygame.Rect(self.column * squareSize, (self.row * squareSize) + menuHeight, squareSize, squareSize)
-        self.createBody = False
 
     def checkColision(self):
-        if self.rect.colliderect(snake.body[0]):
+        if self.rect.colliderect(game.snake[0]):
             self.move()
-            self.createBody = True
-    
-    # Move to a place there isnt a snake
-    def move(self):
-        print("Culo")
-        self.column = randrange(maxColumns)
-        print(self.column)
-        self.row = randrange(maxRows)
-        print(self.row)
-        self.rect.x = self.column * squareSize
-        self.rect.y = self.row * squareSize + 100
-        # self.rect = self.rect.move(self.column * squareSize, (self.row * squareSize) + menuHeight)
-        snake.nextBody.append([snake.body[-1].row, snake.body[-1].column, snake.body[-1].direction])
+            game.addBody()
 
-class Snake():
+    pass
+
+class Game():
     def __init__(self):
-        self.body = []
-        self.nextBody = []
+        self.snake = []
+        self.directions = []
+        self.headDirection = ""
+
+    def changeDirection(self):
+        self.directions.insert(0, self.headDirection)
+        if len(self.directions) > len(self.snake):
+            self.directions.pop(-1)
 
     def addBody(self):
-        index = len(self.body) - 1
-        # self.body.append(SnakeBody(self.body[index].row, self.body[index].column, len(self.body), self.body[index].direction))
-        self.body.append(SnakeBody(self.nextBody[0][0], self.nextBody[0][1], len(self.body), self.nextBody[0][2]))
-        self.nextBody.pop(0)
-        berry.createBody = False
-        pass
+        pos = [self.snake[-1].row, self.snake[-1].column]
+        self.snake.append(Snake(pos[0], pos[1], len(self.snake)))
+
+    def checkColision(self):
+        if self.snake[0].column < 0 or self.snake[0].column >= maxColumns:
+            self.gameOver()
+            return
+        
+        if self.snake[0].row < 0 or self.snake[0].row >= maxRows:
+            self.gameOver()
+            return
+
+        for body in self.snake[1:]:
+            if self.snake[0].rect.colliderect(body.rect):
+                self.gameOver
+                return
+
+    def gameOver(self):
+        print("Lose")
+        self.directions.clear()
+    pass
+
+
+
 
 # Game Setup
-snake = Snake()
-snake.body.append(SnakeHead(5, 5, len(snake.body)))
+game = Game()
+game.snake.append(Snake(5,5, len(game.snake)))
 berry = Berry()
+# game.snake.append(Snake(5,4, len(game.snake)))
+# snake = Snake()
+# snake.body.append(SnakeHead(5, 5, len(snake.body)))
+# berry = Berry()
 # snake.body.append(SnakeBody(5, 4, len(snake.body)))
 # snake.body.append(SnakeBody(5, 3, len(snake.body)))
 # snake.body.append(SnakeBody(5, 2, len(snake.body)))
@@ -130,33 +216,28 @@ while True:
         # Movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_UP:
-                snake.body[0].changeDirection("up")
-                pass
+                if isValidDirection("up"):
+                    game.headDirection = "up"
             if event.key == pygame.K_DOWN:
-                snake.body[0].changeDirection("down")
-                pass
+                if isValidDirection("down"):
+                    game.headDirection = "down"
             if event.key == pygame.K_LEFT:
-                snake.body[0].changeDirection("left")
-                pass
+                if isValidDirection("left"):
+                    game.headDirection = "left"
             if event.key == pygame.K_RIGHT:
-                snake.body[0].changeDirection("right")
-                pass
+                if isValidDirection("right"):
+                    game.headDirection = "right"
             if event.key == pygame.K_SPACE:
-                snake.addBody()
+                game.addBody()
                 pass
 
     # Snake movement
     movement()
-    
-    # Change Direction
-    for square in snake.body[1:]:
-        square.changeDirection()
-
-    if berry.createBody:
-        snake.addBody()
+    game.changeDirection()
 
     # Colision -------------------------------------
     berry.checkColision()
+    game.checkColision()
     # ----------------------------------------------
     
     # Visuals --------------------------------------
@@ -171,7 +252,7 @@ while True:
         pygame.draw.line(screen, (0,0,0), (0, menuHeight + y * squareSize), (size[0], menuHeight + y * squareSize), 1)
     
     # Drawing Snake
-    for square in snake.body:
+    for square in game.snake:
         pygame.draw.rect(screen, (124,252,0), square.rect)
     
     # Drawing Berrys
