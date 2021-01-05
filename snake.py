@@ -50,78 +50,6 @@ maxRows = int((size[1] -menuHeight) / squareSize)
 # Snake Setup
 speed = squareSize
 
-# class SnakeBody():
-#     def __init__(self, row, column, index, direction):
-#         self.rect = pygame.Rect(column * squareSize, (row * squareSize) + menuHeight, squareSize, squareSize)
-#         self.row = row
-#         self.column = column
-#         self.direction = direction
-#         self.index = index
-#         self.nextDirection = []
-
-#     def changeDirection(self):
-#         if len(self.nextDirection) == 0:
-#             return
-        
-#         if self.row == self.nextDirection[0][0] and self.column == self.nextDirection[0][1]:
-#             self.direction = self.nextDirection[0][2]
-#             self.nextDirection.pop(0)
-
-
-# class SnakeHead(SnakeBody):
-#     def __init__(self, row, column, index):
-#         SnakeBody.__init__(self, row, column, index, "")
-
-#     def changeDirection(self, direction):
-#         if direction in ["up", "down"] and self.direction in ["up", "down"]:
-#             return
-
-#         if direction in ["left", "right"] and self.direction in ["left", "right"]:
-#             return
-
-#         self.direction = direction
-
-#         pos = [self.row, self.column, direction]
-#         for square in snake.body[1:]:
-#             square.nextDirection.append(pos)
-
-# class Berry():
-#     def __init__(self):
-#         self.column = randrange(maxColumns)
-#         self.row = randrange(maxRows)
-#         self.rect = pygame.Rect(self.column * squareSize, (self.row * squareSize) + menuHeight, squareSize, squareSize)
-#         self.createBody = False
-
-#     def checkColision(self):
-#         if self.rect.colliderect(snake.body[0]):
-#             self.move()
-#             self.createBody = True
-    
-#     # Move to a place there isnt a snake
-#     def move(self):
-#         print("Culo")
-#         self.column = randrange(maxColumns)
-#         print(self.column)
-#         self.row = randrange(maxRows)
-#         print(self.row)
-#         self.rect.x = self.column * squareSize
-#         self.rect.y = self.row * squareSize + 100
-#         # self.rect = self.rect.move(self.column * squareSize, (self.row * squareSize) + menuHeight)
-#         snake.nextBody.append([snake.body[-1].row, snake.body[-1].column, snake.body[-1].direction])
-
-# class Snake():
-#     def __init__(self):
-#         self.body = []
-#         self.nextBody = []
-
-#     def addBody(self):
-#         index = len(self.body) - 1
-#         # self.body.append(SnakeBody(self.body[index].row, self.body[index].column, len(self.body), self.body[index].direction))
-#         self.body.append(SnakeBody(self.nextBody[0][0], self.nextBody[0][1], len(self.body), self.nextBody[0][2]))
-#         self.nextBody.pop(0)
-#         berry.createBody = False
-#         pass
-
 class Snake():
     def __init__(self, row, column, index):
         self.rect = pygame.Rect(column * squareSize, (row * squareSize) + menuHeight, squareSize, squareSize)
@@ -129,12 +57,6 @@ class Snake():
         self.column = column
         self.direction = ''
         self.index = index
-
-    # def changeDirection(self, direction):
-    #     self.direction = direction
-    #     if (self.index + 1) < len(game.snake):
-    #         game.snake[self.index + 1].changeDirection(direction)
-    pass
 
 class Berry():
     def __init__(self):
@@ -179,10 +101,12 @@ class Game():
             self.gameOver()
             return
 
-        for body in self.snake[1:]:
-            if self.snake[0].rect.colliderect(body.rect):
-                self.gameOver
-                return
+        # If the snake is less than 5 squares, cannot eat thenselve
+        if len(self.snake) > 4:
+            for body in self.snake[4:]:
+                if self.snake[0].rect.colliderect(body.rect):
+                    self.gameOver()
+                    return
 
     def gameOver(self):
         print("Lose")
@@ -196,14 +120,8 @@ class Game():
 game = Game()
 game.snake.append(Snake(5,5, len(game.snake)))
 berry = Berry()
-# game.snake.append(Snake(5,4, len(game.snake)))
-# snake = Snake()
-# snake.body.append(SnakeHead(5, 5, len(snake.body)))
-# berry = Berry()
-# snake.body.append(SnakeBody(5, 4, len(snake.body)))
-# snake.body.append(SnakeBody(5, 3, len(snake.body)))
-# snake.body.append(SnakeBody(5, 2, len(snake.body)))
-# snake.body.append(SnakeBody(5, 1, len(snake.body)))
+
+cycle = 0
 
 while True:
     # Handling Events
