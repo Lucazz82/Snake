@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from math import floor
 from random import randrange
+from tkinter import messagebox
 
 # Functions ------------------------------------
 def movement():
@@ -30,6 +31,13 @@ def isValidDirection(direction):
         return False
 
     return True
+
+def thereIsSnake(row, column):
+    for body in game.snake:
+        if row == body.row and column == body.column:
+            return True
+    
+    return False
 #-----------------------------------------------
 
 # Pygame Setup
@@ -66,8 +74,12 @@ class Berry():
         self.move()
 
     def move(self):
-        self.column = randrange(maxColumns)
-        self.row = randrange(maxRows)
+        while True:
+            self.column = randrange(maxColumns)
+            self.row = randrange(maxRows)
+
+            if not thereIsSnake(self.row, self.column):
+                break
         self.rect = pygame.Rect(self.column * squareSize, (self.row * squareSize) + menuHeight, squareSize, squareSize)
 
     def checkColision(self):
@@ -75,13 +87,14 @@ class Berry():
             self.move()
             game.addBody()
 
-    pass
-
 class Game():
     def __init__(self):
         self.snake = []
         self.directions = []
+        self.font = pygame.font.Font("freesansbold.ttf", 25)
         self.headDirection = ""
+        self.snakeIcon = pygame.Rect(20, 20, 30, 30)
+        self.initTime = pygame.time.get_ticks()
 
     def changeDirection(self):
         self.directions.insert(0, self.headDirection)
@@ -111,8 +124,12 @@ class Game():
     def gameOver(self):
         print("Lose")
         self.directions.clear()
-    pass
+        messagebox.showinfo(title="Game Over", message="Your score is {} points.\nContratulations!".format(len(game.snake)))
+        self.reset()
 
+    def reset(self):
+        self.__init__()
+        self.snake.append(Snake(5,5, len(game.snake)))
 
 
 
@@ -120,8 +137,6 @@ class Game():
 game = Game()
 game.snake.append(Snake(5,5, len(game.snake)))
 berry = Berry()
-
-cycle = 0
 
 while True:
     # Handling Events
@@ -172,12 +187,27 @@ while True:
     # Drawing Snake
     for square in game.snake:
         pygame.draw.rect(screen, (124,252,0), square.rect)
+
+    # Drawing Snake Eyes
+    pygame.draw.circle(screen, (0,0,0), (game.snake[0].column * squareSize + 5, game.snake[0].row * squareSize + menuHeight + 5), 2)
+    pygame.draw.circle(screen, (0,0,0), (game.snake[0].column * squareSize + 15, game.snake[0].row * squareSize + menuHeight + 5), 2)
     
     # Drawing Berrys
     pygame.draw.rect(screen, (255,0,0), berry.rect)
+
+    # Drawing Score
+    length = game.font.render("x {}".format(len(game.snake)), True, (0,0,0))
+    screen.blit(length, (60,25))
+    pygame.draw.rect(screen, (124,252,0), game.snakeIcon)
+
+    #Drawing Timer
+    current_time = int((pygame.time.get_ticks() - game.initTime) / 1000)
+    time = game.font.render("{}".format(current_time), True, (0,0,0))
+    screen.blit(time, (390,25))
 
     #-----------------------------------------------
     
     # Update Screen
     pygame.display.flip()
-    clock.tick(15)
+    clock.tick(60)
+    pygame.time.delay(50)
